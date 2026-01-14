@@ -1,0 +1,1548 @@
+Project Path: /home/bhaswata/.config/hydenix
+
+Source Tree:
+
+```
+hydenix
+├── flake.nix
+├── docs
+│   ├── installation.md
+│   ├── assets
+│   │   └── option-search.png
+│   ├── community.md
+│   ├── options.md
+│   ├── troubleshooting.md
+│   ├── upgrading.md
+│   ├── faq.md
+│   └── contributing.md
+├── flake.lock
+├── README.md
+├── modules
+│   ├── hm
+│   │   └── default.nix
+│   └── system
+│       └── default.nix
+├── hardware-configuration.nix
+└── configuration.nix
+
+```
+
+`/home/bhaswata/.config/hydenix/flake.nix`:
+
+```````nix
+{
+  description = "template for hydenix";
+
+  inputs = {
+    nixpkgs = {
+      # url = "github:nixos/nixpkgs/nixos-unstable"; # uncomment this if you know what you're doing
+      follows = "hydenix/nixpkgs"; # then comment this
+    };
+    hydenix.url = "github:richen604/hydenix";
+    nixos-hardware.url = "github:nixos/nixos-hardware/master";
+  };
+
+  outputs =
+    { ... }@inputs:
+    let
+      hydenixConfig = inputs.nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        specialArgs = {
+          inherit inputs;
+        };
+        modules = [
+          ./configuration.nix
+        ];
+      };
+      vmConfig = inputs.hydenix.lib.vmConfig {
+        inherit inputs;
+        nixosConfiguration = hydenixConfig;
+      };
+    in
+    {
+      nixosConfigurations.hydenix = hydenixConfig;
+      nixosConfigurations.default = hydenixConfig;
+      packages."x86_64-linux".vm = vmConfig.config.system.build.vm;
+    };
+}
+
+```````
+
+`/home/bhaswata/.config/hydenix/docs/installation.md`:
+
+```````md
+<img align="right" width="75px" alt="NixOS" src="https://github.com/HyDE-Project/HyDE/blob/master/Source/assets/nixos.png?raw=true"/>
+
+# installation
+
+> [!CAUTION]
+> the templated flake is designed for a minimal install of nixos. install nixos first, then follow the instructions below.
+
+## 1. initialize the flake template
+
+```bash
+# create a new directory and initialize the template
+mkdir hydenix && cd hydenix
+nix flake init -t github:richen604/hydenix
+```
+
+## 2. configure your system
+
+edit `configuration.nix` following the detailed comments:
+
+- **optional:** see [module options](./options.md) for advanced configuration
+
+## 3. generate hardware configuration
+
+```bash
+sudo nixos-generate-config --show-hardware-config > hardware-configuration.nix
+```
+
+## 4. initialize git repository
+
+```bash
+git init && git add .
+```
+
+we do this because flakes must be managed via git. and its good practice to version control your configuration
+
+## 5. build and switch to the new configuration
+
+```bash
+sudo nixos-rebuild switch --flake .#hydenix
+```
+
+> [!NOTE]
+> if you made mistakes, it will fail here. try following:
+>
+> - read the error carefully, it may be self-explanatory
+> - troubleshooting steps in [troubleshooting & issues](./troubleshooting.md)
+> - read the [faq](./faq.md), it may have the answer you're looking for
+> - please don't hesitate to ask in [discord](https://discord.gg/AYbJ9MJez7) or [github discussions](https://github.com/richen604/hydenix/discussions)!
+
+## 6. launch hydenix
+
+reboot and log in.
+
+> [!IMPORTANT]
+> do not forget to set your password
+>
+> ```bash
+> passwd
+> ```
+
+you can generate the theme cache with the below:
+
+```bash
+hyde-shell reload
+```
+
+```````
+
+`/home/bhaswata/.config/hydenix/docs/community.md`:
+
+```````md
+<img align="right" width="75px" alt="NixOS" src="https://github.com/HyDE-Project/HyDE/blob/master/Source/assets/nixos.png?raw=true"/>
+
+# hydenix community
+
+here are a list of community configs using hydenix.
+
+- [richen604/richendots](https://github.com/richen604/richendots)
+- [Razkaroth/solitude](https://github.com/Razkaroth/solitude)
+
+if you have a config you'd like to share, please open a PR to add it to the list.
+
+```````
+
+`/home/bhaswata/.config/hydenix/docs/options.md`:
+
+```````md
+<img align="right" width="75px" alt="NixOS" src="https://github.com/HyDE-Project/HyDE/blob/master/Source/assets/nixos.png?raw=true"/>
+
+# hydenix options
+
+- [hydenix options](#hydenix-options)
+  - [module documentation](#module-documentation)
+  - [required options](#required-options)
+  - [default options](#default-options)
+
+## module documentation
+
+going to let you in on a secret: the nix options system *is* the documentation.\
+let's walk through an example. say you want to find info about `hydenix.hm.theme`.\
+the easiest way is to search the github repo for the options:
+
+[search for `hydenix.hm.theme`](https://github.com/richen604/hydenix/search?q=hydenix.hm.theme)
+
+you'll see the options in the search results, something like this:
+
+![options search example](./assets/option-search.png)
+
+click on the file to see the actual options definition, which looks something like this:
+
+```nix
+  options.hydenix.hm.theme = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = config.hydenix.hm.enable;
+      description = "Enable theme module";
+    };
+
+    active = lib.mkOption {
+      type = lib.types.str;
+      default = "Catppuccin Mocha";
+      description = "Active theme name";
+    };
+
+    themes = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = [
+        "Catppuccin Mocha"
+        "Catppuccin Latte"
+      ];
+      description = "Available theme names";
+    };
+  };
+```
+
+notice that `active` has type `str`, which means it accepts a string.
+so you'd configure it like this:
+
+```nix
+hydenix.hm.theme.active = "Catppuccin Mocha";
+```
+
+you can find the full list of option types in the [nixos manual](https://nlewo.github.io/nixos-manual-sphinx/development/option-types.xml.html).
+
+## required options
+
+these are the required options for hydenix.
+you *must* set these options or else hydenix will not load.
+
+```nix
+{
+  hydenix = {
+    enable = true; # enable hydenix - required, default false
+    hostname = "hydenix"; # hostname
+    timezone = "America/Vancouver"; # timezone
+    locale = "en_CA.UTF-8"; # locale
+    hm.enable = true;
+  };
+}
+```
+
+## default options
+
+below are the default options for hydenix. they are in *object format* and any options you may follow the steps above to see any of the options implementation and documentation.
+
+> [!important]
+> `hydenix.hm` options must be used within a home-manager module, eg `./modules/hm/default.nix`.
+
+```nix
+{
+  hydenix = {
+
+    # important options
+    enable = true; # enable hydenix - required, default false
+    hostname = "hydenix"; # hostname
+    timezone = "America/Vancouver"; # timezone
+    locale = "en_CA.UTF-8"; # locale
+
+    # nixos hydenix options
+    audio.enable = true; # enable audio module
+    boot = {
+      enable = true; # enable boot module
+      useSystemdBoot = true; # disable for GRUB
+      grubTheme = "Retroboot"; # or "Pochita"
+      grubExtraConfig = ""; # additional GRUB configuration
+      kernelPackages = pkgs.linuxPackages_zen; # default zen kernel
+    };
+    gaming.enable = true; # enable gaming module
+    hardware.enable = true; # enable hardware module
+    network.enable = true; # enable network module
+    nix.enable = true; # enable nix module
+    sddm.enable = true; # enable sddm module
+
+    system.enable = true; # enable system module
+
+    # home-manager hydenix options
+    hm = {
+      enable = true; # enable home-manager module
+      comma.enable = true; # useful nix tool to run software without installing it first
+      dolphin.enable = true; # file manager
+      editors = {
+        enable = true; # enable editors module
+        neovim = true; # enable neovim module
+        vscode = {
+          enable = true; # enable vscode module
+          wallbash = true; # enable wallbash extension for vscode
+        };
+        vim.enable = true; # enable vim module
+        default = "code"; # default text editor
+      };
+      fastfetch.enable = true; # fastfetch configuration
+      firefox.enable = true; # enable firefox module
+      gaming.enable = true; # enable gaming module
+      git = {
+        enable = true; # enable git module
+        name = null; # git user name eg "John Doe"
+        email = null; # git user email eg "john.doe@example.com"
+      };
+      hyde.enable = true; # enable hyde module
+      hyprland = {
+        enable = true; # enable hyprland module
+        extraConfig = ""; # extra config appended to userprefs.conf
+        overrideMain = null; # complete override of hyprland.conf
+        suppressWarnings = false; # suppress warnings
+        # Animation configurations
+        animations = {
+          enable = true; # enable animation configurations
+          preset = "standard"; # string from override or default: "standard" # or "LimeFrenzy", "classic", "diablo-1", "diablo-2", "disable", "dynamic", "end4", "fast", "high", "ja", "me-1", "me-2", "minimal-1", "minimal-2", "moving", "optimized", "standard", "vertical"
+          extraConfig = ""; # additional animation configuration
+          overrides = { }; # override specific animation files by name
+        };
+        # Shader configurations
+        shaders = {
+          enable = true; # enable shader configurations
+          active = "disable"; # string from override or default: "disable" # or "blue-light-filter", "color-vision", "custom", "grayscale", "invert-colors", "oled", "oled-saver", "paper", "vibrance", "wallbash"
+          overrides = { }; # override or add custom shaders
+        };
+        # Workflow configurations
+        workflows = {
+          enable = true; # enable workflow configurations
+          active = "default"; # string from override or default: "default" # or "editing", "gaming", "powersaver", "snappy"
+          overrides = { }; # override or add custom workflows
+        };
+        # Hypridle configurations
+        hypridle = {
+          enable = true; # enable hypridle configurations
+          extraConfig = ""; # additional hypridle configuration
+          overrideConfig = null; # complete hypridle configuration override (null or lib.types.lines)
+        };
+        # Keybindings configurations
+        keybindings = {
+          enable = true; # enable keybindings configurations
+          extraConfig = ""; # additional keybindings configuration
+          overrideConfig = null; # complete keybindings configuration override (null or lib.types.lines)
+        };
+        # Window rules configurations
+        windowrules = {
+          enable = true; # enable window rules configurations
+          extraConfig = ""; # additional window rules configuration
+          overrideConfig = null; # complete window rules configuration override (null or lib.types.lines)
+        };
+        # NVIDIA configurations
+        nvidia = {
+          enable = false; # enable NVIDIA configurations (defaults to config.hardware.nvidia.enabled)
+          extraConfig = ""; # additional NVIDIA configuration
+          overrideConfig = null; # complete NVIDIA configuration override (null or lib.types.lines)
+        };
+        # Pyprland configurations
+        pyprland = {
+          enable = true; # enable pyprland configurations
+          extraConfig = ""; # additional pyprland configuration
+          overrideConfig = null; # complete pyprland configuration override (null or lib.types.lines)
+        };
+
+        # Monitor configurations
+        monitors = {
+          enable = true; # enable monitor configurations
+          overrideConfig = null; # complete monitor configuration override (null or lib.types.lines)
+        };
+      };
+      lockscreen = {
+        enable = true; # enable lockscreen module
+        hyprlock = true; # enable hyprlock lockscreen
+        swaylock = false; # enable swaylock lockscreen
+      };
+      notifications.enable = true; # enable notifications module
+      qt.enable = true; # enable qt module
+      rofi.enable = true; # enable rofi module
+      screenshots = {
+        enable = true; # enable screenshots module
+        grim.enable = true; # enable grim screenshot tool
+        slurp.enable = true; # enable slurp region selection tool
+        satty.enable = false; # enable satty screenshot annotation tool
+        swappy.enable = true; # enable swappy screenshot editor
+      };
+      wallpapers.enable = true; # enable wallpapers module
+      shell = {
+        enable = true; # enable shell module
+        zsh = {
+          enable = true; # enable zsh shell
+          plugins = [ "sudo" ]; # zsh plugins
+          configText = ""; # zsh config text
+        };
+        bash.enable = false; # enable bash shell
+        fish.enable = false; # enable fish shell
+        pokego.enable = false; # enable Pokemon ASCII art scripts
+        p10k.enable = false; # enable p10k prompt
+        starship.enable = true; # enable starship prompt
+      };
+      social = {
+        enable = true; # enable social module
+        discord.enable = true; # enable discord module
+        vesktop.enable = true; # enable vesktop module
+      };
+      spotify.enable = true; # enable spotify module
+      swww.enable = true; # enable swww wallpaper daemon
+      terminals = {
+        enable = true; # enable terminals module
+        kitty = {
+          enable = true; # enable kitty terminal
+          configText = ""; # kitty config text
+        };
+      };
+      theme = {
+        enable = true; # enable theme module
+        active = "Catppuccin Mocha"; # active theme name
+        themes = [ "Catppuccin Mocha" "Catppuccin Latte" ]; # default enabled themes, full list in https://github.com/richen604/hydenix/tree/main/hydenix/sources/themes
+      };
+      waybar = {
+        enable = true; # enable waybar module
+        userStyle = ""; # custom waybar user-style.css
+      };
+      wlogout.enable = true; # enable wlogout module
+      xdg.enable = true; # enable xdg module
+    };
+  };
+}
+
+```````
+
+`/home/bhaswata/.config/hydenix/docs/troubleshooting.md`:
+
+```````md
+<img align="right" width="75px" alt="NixOS" src="https://github.com/HyDE-Project/HyDE/blob/master/Source/assets/nixos.png?raw=true"/>
+
+# troubleshooting & issues
+
+## nix errors
+
+nix errors can be tricky to diagnose, but the below might assist in diagnosing the issue.
+
+> [!TIP]
+> rerun the command with `-v` to get more verbose output.
+> you can also rerun the command with `--show-trace` to get a more detailed traceback.
+> if the nix error is not clear, often the correct error message is somewhere in the *middle* of the error message.
+
+## system errors & bugs
+
+the following information is required when creating an issue, please provide as much as possible.
+it's also possible to diagnose issues yourself with the information below.
+
+1. **system logs**
+
+   ```bash
+   journalctl -b                                          # System logs
+   sudo systemctl status home-manager-$HOSTNAME.service   # Home-manager status
+   ```
+
+2. **system information**
+
+   ```bash
+   nix-shell -p nix-info --run "nix-info -m"
+   ```
+
+```````
+
+`/home/bhaswata/.config/hydenix/docs/upgrading.md`:
+
+```````md
+<img align="right" width="75px" alt="NixOS" src="https://github.com/HyDE-Project/HyDE/blob/master/Source/assets/nixos.png?raw=true"/>
+
+# upgrading
+
+hydenix can be upgraded, downgraded, or version locked easy.
+in your template flake folder, update hydenix to main using:
+
+```bash
+nix flake update hydenix
+```
+
+or define a specific version in your `flake.nix` template:
+
+```nix
+inputs = {
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    hydenix = {
+      # Available inputs:
+      # Main: github:richen604/hydenix
+      # Dev: github:richen604/hydenix/dev
+      # Commit: github:richen604/hydenix/<commit-hash>
+      # Version: github:richen604/hydenix/v1.0.0
+      url = "github:richen604/hydenix";
+    };
+  };
+```
+
+run `nix flake update hydenix` again to load the update, then rebuild your system to apply the changes.
+
+## when to upgrade
+
+```mermaid
+graph TD
+    A[v2.3.1] --> B[major]
+    A --> C[minor]
+    A --> D[patch]
+    B --> E[breaking changes<br>review release notes for api changes]
+    C --> F[new features<br>safe to update]
+    D --> G[bug fixes<br>safe to update]
+
+    style A fill:#c79bf0,stroke:#ebbcba,stroke-width:2px,color:#000
+    style B fill:#ebbcba,stroke:#c79bf0,stroke-width:2px,color:#000
+    style C fill:#ebbcba,stroke:#c79bf0,stroke-width:2px,color:#000
+    style D fill:#ebbcba,stroke:#c79bf0,stroke-width:2px,color:#000
+    style E fill:#f6f6f6,stroke:#c79bf0,stroke-width:2px,color:#000
+    style F fill:#f6f6f6,stroke:#c79bf0,stroke-width:2px,color:#000
+    style G fill:#f6f6f6,stroke:#c79bf0,stroke-width:2px,color:#000
+```
+
+<br>
+
+> [!Important]
+>
+> - **always review [release notes](https://github.com/richen604/hydenix/releases) for major updates (API changes)**
+> - update to minor versions for new features
+> - keep up with patches for stability
+
+```````
+
+`/home/bhaswata/.config/hydenix/docs/faq.md`:
+
+```````md
+<img align="right" width="75px" alt="NixOS" src="https://github.com/HyDE-Project/HyDE/blob/master/Source/assets/nixos.png?raw=true"/>
+
+# faq
+
+## general FAQ
+
+- [faq](#faq)
+  - [general FAQ](#general-faq)
+    - [why should I use nixos?](#why-should-i-use-nixos)
+    - [how do I learn more about nix?](#how-do-i-learn-more-about-nix)
+  - [hydenix FAQ](#hydenix-faq)
+    - [how do I upgrade hydenix?](#how-do-i-upgrade-hydenix)
+    - [when should I upgrade?](#when-should-i-upgrade)
+    - [how do I fix (nix error / system error / bug / etc)?](#how-do-i-fix-nix-error--system-error--bug--etc)
+    - [common errors](#common-errors)
+      - [`Existing file '...' is in the way of '...'`](#existing-file--is-in-the-way-of-)
+    - [what are the module options?](#what-are-the-module-options)
+    - [what if I want to customize hydenix?](#what-if-i-want-to-customize-hydenix)
+    - [what are some example configurations?](#what-are-some-example-configurations)
+    - [how do I persist changes on reboot/rebuild/etc?](#how-do-i-persist-changes-on-rebootrebuildetc)
+    - [how do I add a new theme?](#how-do-i-add-a-new-theme)
+    - [what is mutable.nix?](#what-is-mutablenix)
+    - [why do themes still show after I remove them from `hydenix.hm.theme.themes`?](#why-do-themes-still-show-after-i-remove-them-from-hydenixhmthemethemes)
+    - [requesting features](#requesting-features)
+  - [other faq](#other-faq)
+    - [how do I run hyprland in a vm?](#how-do-i-run-hyprland-in-a-vm)
+
+### why should I use nixos?
+
+nixos offers several key advantages:
+
+1. **reproducible setups**: roll back to working states instantly if something breaks.
+2. **configuration as code**: version control your entire OS setup.
+3. **no dependency hell**: packages are isolated, allowing multiple versions side by side.
+4. **declarative approach**: describe the desired end state rather than steps to achieve it.
+5. **risk-free experimentation**: test configurations without permanent consequences.
+6. **developer-friendly**: create isolated environments with precise dependencies.
+
+there's a learning curve, but the benefits are worth it.
+
+<div align="right">
+  <a href="#faq">
+    <img src="https://img.shields.io/badge/Back_to_Top-↑-blue" alt="Back to Top" />
+  </a>
+</div>
+
+### how do I learn more about nix?
+
+> [!TIP]
+> nix is a powerful package manager and configuration system that can be overwhelming at first. here are some resources to help you get started:
+
+general resources
+
+- [nix packages](https://search.nixos.org/packages)
+- [nix options](https://search.nixos.org/options)
+- [home manager options](https://home-manager-options.extranix.com/?query=&release=master)
+- [nixos wiki](https://nixos.wiki)
+- [nixpkgs discussions](https://discourse.nixos.org)
+- [nixpkgs issues](https://github.com/NixOS/nixpkgs/issues)
+
+<div align="right">
+  <a href="#faq">
+    <img src="https://img.shields.io/badge/Back_to_Top-↑-blue" alt="Back to Top" />
+  </a>
+</div>
+
+## hydenix FAQ
+
+### how do I upgrade hydenix?
+
+hydenix can be upgraded, downgraded, or version locked easy.
+in your template flake folder, update hydenix to main using
+
+```bash
+nix flake update hydenix
+```
+
+or define a specific version in your `flake.nix` template
+
+```nix
+inputs = {
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    hydenix = {
+      # Available inputs:
+      # Main: github:richen604/hydenix
+      # Dev: github:richen604/hydenix/dev
+      # Commit: github:richen604/hydenix/<commit-hash>
+      # Version: github:richen604/hydenix/v1.0.0
+      url = "github:richen604/hydenix";
+    };
+  };
+```
+
+run `nix flake update hydenix` again to load the update, then rebuild your system to apply the changes
+
+### when should I upgrade?
+
+```mermaid
+graph TD
+    A[v2.3.1] --> B[major]
+    A --> C[minor]
+    A --> D[patch]
+    B --> E[breaking changes<br>review release notes for api changes]
+    C --> F[new features<br>safe to update]
+    D --> G[bug fixes<br>safe to update]
+
+    style A fill:#c79bf0,stroke:#ebbcba,stroke-width:2px,color:#000
+    style B fill:#ebbcba,stroke:#c79bf0,stroke-width:2px,color:#000
+    style C fill:#ebbcba,stroke:#c79bf0,stroke-width:2px,color:#000
+    style D fill:#ebbcba,stroke:#c79bf0,stroke-width:2px,color:#000
+    style E fill:#f6f6f6,stroke:#c79bf0,stroke-width:2px,color:#000
+    style F fill:#f6f6f6,stroke:#c79bf0,stroke-width:2px,color:#000
+    style G fill:#f6f6f6,stroke:#c79bf0,stroke-width:2px,color:#000
+```
+
+- **always review [release notes](https://github.com/richen604/hydenix/releases) for major updates (api changes)**
+- keep up with patches for stability
+- update to minor versions for new features
+
+### how do I fix (nix error / system error / bug / etc)?
+
+please see the [troubleshooting](./troubleshooting.md) guide for more information on how to diagnose and fix issues.
+or create an issue in the [hydenix GitHub repository](https://github.com/richen604/hydenix/issues).
+
+### common errors
+
+#### `Existing file '...' is in the way of '...'`
+
+this error occurs when home-manager tries to manage a file that already exists and wasn't created by home-manager.
+
+example:
+
+```bash
+Existing file '/home/user/.config/kitty/kitty.conf' is in the way of '/nix/store/...-home-manager-files/.config/kitty/kitty.conf'
+```
+
+**solution 1: remove existing files (recommended)**
+
+remove the conflicting files and let home-manager recreate them:
+
+```bash
+# Remove the specific file
+rm ~/.config/kitty/kitty.conf
+
+# Or remove entire config directory if needed (careful not to delete important files)
+rm -rf ~/.config/kitty/
+```
+
+**solution 2: backup existing files**
+
+if you want to preserve your existing configuration:
+
+```bash
+# Create backup
+mv ~/.config/kitty/kitty.conf ~/.config/kitty/kitty.conf.backup
+
+# Then rebuild to let home-manager create the new file
+sudo nixos-rebuild switch
+```
+
+**solution 3: force home-manager to backup automatically**
+
+add this to your `configuration.nix` to automatically backup conflicting files:
+
+```nix
+{
+  home-manager.backupFileExtension = "backup";
+}
+```
+
+this will automatically rename existing files with a `.backup` extension when home-manager encounters conflicts, allowing the rebuild to proceed without manual intervention only once.
+
+> [!WARNING]
+> if there is a conflict again, home-manager will error for you to manually resolve it. i don't include this by default as automating backups may not be ideal for users and it does not really solve the issue with managing backups
+
+### what are the module options?
+
+Visit [options.md](./options.md) for more information on the module options.
+
+### what if I want to customize hydenix?
+
+hydenix is designed to be customizable outside of the module options. write your own modules, import your own flakes, packages, etc.
+
+if you need to disable any of the modules above in [module options](#what-are-the-module-options), simply disable the module and write your own configuration. ideally referencing the module in the source code.
+
+note however, it's very easy to overwrite hydenix defaults this way and may lead to bugs. feel free to ask questions in our [discord](https://discord.gg/AYbJ9MJez7) if you need help.
+
+<div align="right">
+  <a href="#faq">
+    <img src="https://img.shields.io/badge/Back_to_Top-↑-blue" alt="Back to Top" />
+  </a>
+</div>
+
+### what are some example configurations?
+
+see [community configs](./community.md) for examples.
+
+### how do I persist changes on reboot/rebuild/etc?
+
+> [!IMPORTANT]
+> do not edit any mutable files at runtime as they may be overwritten on rebuild <br>
+> all edits must be done in your flake via nixos & home-manager options
+
+some state files in hydenix are mutable by design. this allows certain theme changes during runtime.
+
+example:
+
+lets say you have the default theme set to `Catppuccin Mocha` in `hydenix.hm.theme.active`.
+
+you change a theme during runtime using `Meta + Shift + T` to `Catppuccin Latte`.
+your config is unchanged so when you reboot/relog/rebuild, the theme will revert to `Catppuccin Mocha`.
+
+```nix
+{
+  hydenix.hm.theme.active = "Catppuccin Mocha";
+}
+```
+
+simply change the theme in your config to match your desired theme and rebuild.
+
+```nix
+{
+  hydenix.hm.theme.active = "Catppuccin Latte";
+}
+```
+
+but what about file you want to stop from reverting? waybar position or kitty config?
+home-managers `home.file` allows you to do this
+
+```nix
+# any file in `./modules/hm/`
+{
+  home.file = {
+    # copy kitty config to your template flake
+    # cp ~/.config/kitty/kitty.conf ~/path/to/flake/kitty.conf
+    ".config/kitty/kitty.conf" = {
+      source = ./kitty.conf; # path to your kitty config in your template flake
+    };
+    # copy waybar position state to your template flake
+    # cp ~/.config/waybar/config.ctl ~/path/to/flake/config.ctl
+    ".config/waybar/config.ctl" = {
+      source = ./config.ctl; # path to your waybar config in your template flake
+    };
+  };
+}
+```
+
+see [home.file options](https://home-manager-options.extranix.com/?query=home.file&release=master) for more information
+
+<div align="right">
+  <a href="#faq">
+    <img src="https://img.shields.io/badge/Back_to_Top-↑-blue" alt="Back to Top" />
+  </a>
+</div>
+
+### how do I add a new theme?
+
+<!-- TODO: docs: Add a guide on how to add a new theme -->
+
+### what is mutable.nix?
+
+> [!IMPORTANT]
+> do not edit any mutable files at runtime as they may be overwritten on rebuild <br>
+> all edits must be done in your flake via nixos & home-manager options
+
+`mutable.nix` is a custom module that allows certain files to be copied instead of symlinked during system builds, making them writable at runtime. key points:
+
+- extends `home.file`, `xdg.configFile`, and `xdg.dataFile` with a `mutable` option
+- files marked as `mutable = true` (and `force = true`) will be writable
+- changes persist across rebuilds
+- useful for programs that need runtime configuration changes
+
+example usage in scripts:
+
+```nix
+home.activation = {
+    example = lib.hm.dag.entryAfter [ "mutableGeneration" ] ''
+        $DRY_RUN_CMD echo "example"
+    '';
+}
+```
+
+credit: [@piousdeer](https://gist.github.com/piousdeer/b29c272eaeba398b864da6abf6cb5daa)
+
+<div align="right">
+  <a href="#faq">
+    <img src="https://img.shields.io/badge/Back_to_Top-↑-blue" alt="Back to Top" />
+  </a>
+</div>
+
+### why do themes still show after I remove them from `hydenix.hm.theme.themes`?
+
+themes are saved in `~/.config/hydenix/themes` so they will still show after you remove them from `hydenix.hm.theme.themes`.
+to clear the saved themes, run `rm -rf ~/.config/hydenix/themes/THEME_NAME` for each theme you want to remove.
+
+<div align="right">
+  <a href="#faq">
+    <img src="https://img.shields.io/badge/Back_to_Top-↑-blue" alt="Back to Top" />
+  </a>
+</div>
+
+### requesting features
+
+please open a [feature request](https://github.com/richen604/hydenix/issues/new?template=feature_request.md) if you have any feature requests.
+
+<div align="right">
+  <a href="#faq">
+    <img src="https://img.shields.io/badge/Back_to_Top-↑-blue" alt="Back to Top" />
+  </a>
+</div>
+
+## other faq
+
+### how do I run hyprland in a vm?
+
+hyprland vm is not well supported. check out [hyprland - running in a vm](https://wiki.hyprland.org/Getting-Started/Installation/#running-in-a-vm)
+
+best bet is to have virtio, opengl, and VT-x support
+
+non-nixos hosts should run with [nixGL](https://github.com/nix-community/nixGL) eg `nixGL nix run .`
+
+<details>
+<summary>hardware requirements</summary>
+CPU
+
+- Intel CPU with VT-x or AMD CPU with AMD-V
+- Virtualization enabled in BIOS/UEFI
+
+GPU
+
+- NVIDIA: GTX 600+ series (proprietary drivers)
+- AMD: HD 7000+ series
+- Intel: HD 4000+ (Ivy Bridge)
+- OpenGL 3.3+ support required
+
+</details>
+
+<br>
+
+<details>
+<summary>1. install drivers</summary>
+
+```bash
+# Nvidia
+sudo apt install nvidia-driver nvidia-utils     # Debian/Ubuntu
+sudo pacman -S nvidia nvidia-utils              # Arch
+# NixOS configuration
+{
+  hardware.graphics.enable = true;
+  hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.stable;
+  hardware.nvidia.modesetting.enable = true;
+}
+
+# AMD
+sudo apt install mesa-utils vulkan-tools        # Debian/Ubuntu
+sudo pacman -S mesa lib32-mesa vulkan-radeon    # Arch
+# NixOS configuration
+{
+  hardware.graphics.enable = true;
+  hardware.graphics.extraPackages = with pkgs; [ amdvlk ];
+}
+
+# Intel
+sudo apt install mesa-utils intel-media-va-driver  # Debian/Ubuntu
+sudo pacman -S mesa lib32-mesa intel-media-driver  # Arch
+# NixOS configuration
+{
+  hardware.graphics.enable = true;
+  hardware.graphics.extraPackages = with pkgs; [ intel-media-driver ];
+}
+
+# KVM modprobe
+modprobe kvm
+modprobe kvm_intel # or kvm_amd
+# NixOS configuration
+{
+  boot.kernelModules = [ "kvm-intel" ]; # or "kvm-amd" for AMD processors
+  virtualisation.libvirtd.enable = true;
+}
+```
+
+</details>
+
+<div style="margin-top: 10px;"></div>
+
+<details>
+<summary>2. verify setup</summary>
+
+```bash
+# Verify KVM support
+egrep -c '(vmx|svm)' /proc/cpuinfo    # Should return > 0
+lsmod | grep kvm                       # Check KVM modules
+
+# Host: Check OpenGL
+glxinfo | grep "OpenGL"
+```
+
+</details>
+
+<div style="margin-top: 10px;"></div>
+
+<details>
+<summary>3. setup the vm</summary>
+
+to set up the vm, follow the instructions in the [hyprland - running in a vm](https://wiki.hyprland.org/Getting-Started/Installation/#running-in-a-vm) guide.
+
+additionally, the following qemu options have been found to be successful:
+
+```bash
+-device virtio-vga-gl
+-display gtk,gl=on,grab-on-hover=on
+-usb -device usb-tablet
+-cpu host
+-enable-kvm
+-machine q35
+-device intel-iommu
+-device ich9-intel-hda
+-device hda-output
+-vga none
+```
+
+</details>
+
+<div align="right">
+  <a href="#faq">
+    <img src="https://img.shields.io/badge/Back_to_Top-↑-blue" alt="Back to Top" />
+  </a>
+</div>
+
+```````
+
+`/home/bhaswata/.config/hydenix/docs/contributing.md`:
+
+```````md
+<img align="right" width="75px" alt="NixOS" src="https://github.com/HyDE-Project/HyDE/blob/master/Source/assets/nixos.png?raw=true"/>
+
+# contributing
+
+this project uses [direnv](https://direnv.net/) for pre-commit hooks. please install it first:
+
+- **nix**: `nix-env -iA nixpkgs.direnv`
+- **macos**: `brew install direnv`
+- **ubuntu/debian**: `apt-get install direnv`
+
+then run `direnv allow` to enable the hooks
+
+more documentation on the codebase can be found at [template README](template/README.md)
+
+this project enforces [conventional commits](https://www.conventionalcommits.org/) format for all commit messages. each commit message must follow this structure:
+
+```bash
+type(optional-scope): subject
+
+[optional body]
+
+[optional footer(s)]
+```
+
+where:
+
+- **type** must be one of:
+  - `feat`: A new feature
+  - `fix`: A bug fix
+  - `docs`: Documentation changes
+  - `style`: Code style changes (formatting, etc)
+  - `refactor`: Code changes that neither fix bugs nor add features
+  - `perf`: Performance improvements
+  - `test`: Adding or modifying tests
+  - `chore`: Maintenance tasks
+
+- **scope** is optional but if used:
+  - must be lowercase
+  - should be descriptive of the area of change
+  - examples: vm, themes, home, cli, docs, etc.
+
+- **subject** must:
+  - not end with a period
+  - be descriptive
+
+examples:
+
+- `feat(vm): add support for fedora vm configuration`
+- `fix: correct wallpaper path in material theme`
+- `docs: update installation instructions`
+- `chore: update dependencies`
+
+## pull requests
+
+1. fork the repository
+2. create your feature branch (`git checkout -b feature/amazing-feature`)
+3. commit your changes using conventional commits
+4. push to the branch (`git push origin feature/amazing-feature`)
+5. open a pull request
+
+## changelog
+
+the changelog is automatically generated from commit messages. clear, well-formatted commit messages ensure your changes are properly documented.
+
+for more details, see the [conventional commits specification](https://www.conventionalcommits.org/).
+
+```````
+
+`/home/bhaswata/.config/hydenix/flake.lock`:
+
+```````lock
+{
+  "nodes": {
+    "home-manager": {
+      "inputs": {
+        "nixpkgs": [
+          "hydenix",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1767104570,
+        "narHash": "sha256-GKgwu5//R+cLdKysZjGqvUEEOGXXLdt93sNXeb2M/Lk=",
+        "owner": "nix-community",
+        "repo": "home-manager",
+        "rev": "e4e78a2cbeaddd07ab7238971b16468cc1d14daf",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "home-manager",
+        "type": "github"
+      }
+    },
+    "hyde": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1761746426,
+        "narHash": "sha256-9Z045RQIvLR8uY4RQsW8C+aMG5kljY5ZvROVNnTbtkY=",
+        "owner": "HyDE-Project",
+        "repo": "HyDE",
+        "rev": "be97b8b4db232bfffc9b74fd27ba90a3457b9354",
+        "type": "github"
+      },
+      "original": {
+        "owner": "HyDE-Project",
+        "repo": "HyDE",
+        "rev": "be97b8b4db232bfffc9b74fd27ba90a3457b9354",
+        "type": "github"
+      }
+    },
+    "hyde-config": {
+      "inputs": {
+        "nixpkgs": [
+          "hydenix",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1754889600,
+        "narHash": "sha256-kn35QcO7OxZxcYyaZNxQ4tBsLdeSi1u2kbWdPg/pky0=",
+        "owner": "richen604",
+        "repo": "hyde-config",
+        "rev": "59dc0659e0cfb72552616553f5b2635cf40c2184",
+        "type": "github"
+      },
+      "original": {
+        "owner": "richen604",
+        "repo": "hyde-config",
+        "type": "github"
+      }
+    },
+    "hyde-ipc": {
+      "inputs": {
+        "nixpkgs": [
+          "hydenix",
+          "nixpkgs"
+        ],
+        "rust-overlay": "rust-overlay"
+      },
+      "locked": {
+        "lastModified": 1762476031,
+        "narHash": "sha256-cyCRPPqpSwjh4XN2RzCmlpOMBC2p9/GP4CCdBCS9Rww=",
+        "owner": "richen604",
+        "repo": "hyde-ipc",
+        "rev": "324839b4b4d45ed2760e4fca6a796a47a0704b2a",
+        "type": "github"
+      },
+      "original": {
+        "owner": "richen604",
+        "repo": "hyde-ipc",
+        "type": "github"
+      }
+    },
+    "hydectl": {
+      "inputs": {
+        "nixpkgs": [
+          "hydenix",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1755057332,
+        "narHash": "sha256-TVLjDL4+SdoXJrNu5TLiUSDD73CdVWfAn3aE2c4aShg=",
+        "owner": "richen604",
+        "repo": "hydectl",
+        "rev": "a19610347de2230175e5d8807584db65d0588134",
+        "type": "github"
+      },
+      "original": {
+        "owner": "richen604",
+        "repo": "hydectl",
+        "type": "github"
+      }
+    },
+    "hydenix": {
+      "inputs": {
+        "home-manager": "home-manager",
+        "hyde": "hyde",
+        "hyde-config": "hyde-config",
+        "hyde-ipc": "hyde-ipc",
+        "hydectl": "hydectl",
+        "hyq": "hyq",
+        "nix-index-database": "nix-index-database",
+        "nixos-hardware": "nixos-hardware",
+        "nixpkgs": "nixpkgs_3"
+      },
+      "locked": {
+        "lastModified": 1767469777,
+        "narHash": "sha256-qYDTc7rhJ7mUOYtNCqVQZqad/tdweldlmPzAEyz6sTo=",
+        "owner": "richen604",
+        "repo": "hydenix",
+        "rev": "4948c21ded5bb8eeeb6d153aa433397f8a45f6c0",
+        "type": "github"
+      },
+      "original": {
+        "owner": "richen604",
+        "repo": "hydenix",
+        "type": "github"
+      }
+    },
+    "hyq": {
+      "inputs": {
+        "nixpkgs": "nixpkgs_2"
+      },
+      "locked": {
+        "lastModified": 1767286442,
+        "narHash": "sha256-tUbPjlqB3VPWmQIfDnIen1dKFwHRG4S9Ox4pCjQ72/w=",
+        "owner": "richen604",
+        "repo": "hyprquery",
+        "rev": "74968e9e7fd3111ac94c18e41a61f02eefd11d2b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "richen604",
+        "repo": "hyprquery",
+        "type": "github"
+      }
+    },
+    "nix-index-database": {
+      "inputs": {
+        "nixpkgs": [
+          "hydenix",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1765267181,
+        "narHash": "sha256-d3NBA9zEtBu2JFMnTBqWj7Tmi7R5OikoU2ycrdhQEws=",
+        "owner": "nix-community",
+        "repo": "nix-index-database",
+        "rev": "82befcf7dc77c909b0f2a09f5da910ec95c5b78f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "nix-index-database",
+        "type": "github"
+      }
+    },
+    "nixos-hardware": {
+      "locked": {
+        "lastModified": 1767185284,
+        "narHash": "sha256-ljDBUDpD1Cg5n3mJI81Hz5qeZAwCGxon4kQW3Ho3+6Q=",
+        "owner": "nixos",
+        "repo": "nixos-hardware",
+        "rev": "40b1a28dce561bea34858287fbb23052c3ee63fe",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "ref": "master",
+        "repo": "nixos-hardware",
+        "type": "github"
+      }
+    },
+    "nixos-hardware_2": {
+      "locked": {
+        "lastModified": 1767185284,
+        "narHash": "sha256-ljDBUDpD1Cg5n3mJI81Hz5qeZAwCGxon4kQW3Ho3+6Q=",
+        "owner": "nixos",
+        "repo": "nixos-hardware",
+        "rev": "40b1a28dce561bea34858287fbb23052c3ee63fe",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "ref": "master",
+        "repo": "nixos-hardware",
+        "type": "github"
+      }
+    },
+    "nixpkgs": {
+      "locked": {
+        "lastModified": 1744536153,
+        "narHash": "sha256-awS2zRgF4uTwrOKwwiJcByDzDOdo3Q1rPZbiHQg/N38=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "18dd725c29603f582cf1900e0d25f9f1063dbf11",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixpkgs-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_2": {
+      "locked": {
+        "lastModified": 1767116409,
+        "narHash": "sha256-5vKw92l1GyTnjoLzEagJy5V5mDFck72LiQWZSOnSicw=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "cad22e7d996aea55ecab064e84834289143e44a0",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "cad22e7d996aea55ecab064e84834289143e44a0",
+        "type": "github"
+      }
+    },
+    "nixpkgs_3": {
+      "locked": {
+        "lastModified": 1767018855,
+        "narHash": "sha256-1x45oTBc0IGEmiRaRTj2TkE6OVU2n2oK++o/Vsv1PZU=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "95e96e8632c387dcf8c4223b8ab14a58936f8b10",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "95e96e8632c387dcf8c4223b8ab14a58936f8b10",
+        "type": "github"
+      }
+    },
+    "root": {
+      "inputs": {
+        "hydenix": "hydenix",
+        "nixos-hardware": "nixos-hardware_2",
+        "nixpkgs": [
+          "hydenix",
+          "nixpkgs"
+        ]
+      }
+    },
+    "rust-overlay": {
+      "inputs": {
+        "nixpkgs": "nixpkgs"
+      },
+      "locked": {
+        "lastModified": 1762396738,
+        "narHash": "sha256-BarSecuxtzp1boERdABLkkoxQTi6s/V33lJwUbWLrLY=",
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "rev": "c63598992afd54d215d54f2b764adc0484c2b159",
+        "type": "github"
+      },
+      "original": {
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "type": "github"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}
+
+```````
+
+`/home/bhaswata/.config/hydenix/README.md`:
+
+```````md
+<img align="right" width="75px" alt="NixOS" src="https://github.com/HyDE-Project/HyDE/blob/master/Source/assets/nixos.png?raw=true"/>
+
+# hydenix template flake
+
+This is now your personal NixOS configuration.\
+Add packages, customize themes, or even disable hydenix and setup your own wm/de.\
+Enjoy the full power of Nix!
+
+visit the [docs/installation.md](./docs/installation.md) to get started.
+
+## file structure
+
+### core configuration files
+
+| file | description |
+|------|-------------|
+| `flake.nix` | main flake configuration and entry point |
+| `configuration.nix` | nixos system configuration |
+| `hardware-configuration.nix` | hardware-specific settings (auto-generated) |
+
+### documentation
+
+| file | purpose |
+|------|---------|
+| [`docs/installation.md`](./docs/installation.md) | installation guide and setup instructions |
+| [`docs/options.md`](./docs/options.md) | available module configuration options |
+| [`docs/faq.md`](./docs/faq.md) | frequently asked questions and solutions |
+| [`docs/troubleshooting.md`](./docs/troubleshooting.md) | common issues and fixes |
+| [`docs/upgrading.md`](./docs/upgrading.md) | how to upgrade your configuration |
+| [`docs/contributing.md`](./docs/contributing.md) | guidelines for contributing |
+| [`docs/community.md`](./docs/community.md) | community configurations and examples |
+
+### write your own modules
+
+> **note:** Use these directories to override or extend hydenix modules with your custom configurations.
+
+| directory | type | purpose |
+|-----------|------|---------|
+| `modules/hm/` | home manager | custom home-manager module definitions (and for `hydenix.hm` options) |
+| `modules/system/` | nixos system | custom system-level module definitions (and for `hydenix` options) |
+
+### directory tree
+
+```bash
+hydenix/
+├── README.md
+├── flake.nix
+├── configuration.nix
+├── hardware-configuration.nix
+├── docs/
+│   ├── *.md files
+│   └── assets/
+└── modules/
+    ├── hm/default.nix
+    └── system/default.nix
+```
+
+## next steps
+
+- to learn more about nix, see [nix resources](./docs/faq.md#how-do-i-learn-more-about-nix)
+- see [module options](./docs/options.md) for configuration
+- check the [faq](./docs/faq.md) and [troubleshooting](./docs/troubleshooting.md) guides
+
+## getting help
+
+- [hydenix issues](https://github.com/richen604/hydenix/issues)
+- [hydenix discussions](https://github.com/richen604/hydenix/discussions)
+- [hyde discord](https://discord.gg/AYbJ9MJez7)
+
+```````
+
+`/home/bhaswata/.config/hydenix/modules/hm/default.nix`:
+
+```````nix
+{ ... }:
+
+{
+  imports = [
+    # ./example.nix - add your modules here
+  ];
+
+  # home-manager options go here
+  home.packages = [
+    # pkgs.vscode - hydenix's vscode version
+    # pkgs.userPkgs.vscode - your personal nixpkgs version
+  ];
+
+  # hydenix home-manager options go here
+  hydenix.hm.enable = true;
+  # Visit https://github.com/richen604/hydenix/blob/main/docs/options.md for more options
+}
+
+```````
+
+`/home/bhaswata/.config/hydenix/modules/system/default.nix`:
+
+```````nix
+{ ... }:
+
+{
+  imports = [
+    # ./example.nix - add your modules here
+  ];
+
+  environment.systemPackages = [
+    # pkgs.vscode - hydenix's vscode version
+    # pkgs.userPkgs.vscode - your personal nixpkgs version
+  ];
+}
+
+```````
+
+`/home/bhaswata/.config/hydenix/hardware-configuration.nix`:
+
+```````nix
+# Do not modify this file!  It was generated by ‘nixos-generate-config’
+# and may be overwritten by future invocations.  Please make changes
+# to /etc/nixos/configuration.nix instead.
+{ config, lib, pkgs, modulesPath, ... }:
+
+{
+  imports =
+    [ (modulesPath + "/installer/scan/not-detected.nix")
+    ];
+
+  boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "nvme" "sd_mod" ];
+  boot.initrd.kernelModules = [ ];
+  boot.kernelModules = [ "kvm-intel" ];
+  boot.extraModulePackages = [ ];
+
+  fileSystems."/" =
+    { device = "/dev/mapper/luks-bcc25aa8-2033-4e31-ab06-32fd6446ef96";
+      fsType = "ext4";
+    };
+
+  boot.initrd.luks.devices."luks-bcc25aa8-2033-4e31-ab06-32fd6446ef96".device = "/dev/disk/by-uuid/bcc25aa8-2033-4e31-ab06-32fd6446ef96";
+
+  fileSystems."/boot" =
+    { device = "/dev/disk/by-uuid/BEE7-6501";
+      fsType = "vfat";
+      options = [ "fmask=0077" "dmask=0077" ];
+    };
+
+  swapDevices =
+    [ { device = "/dev/mapper/luks-7282faec-2147-4fdf-b6d8-6529460f9fe1"; }
+    ];
+
+  nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
+  hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+}
+
+```````
+
+`/home/bhaswata/.config/hydenix/configuration.nix`:
+
+```````nix
+{
+  inputs,
+  pkgs,
+  ...
+}:
+  # FOLLOW THE BELOW INSTRUCTIONS LINE BY LINE TO SET UP YOUR SYSTEM
+{
+  imports = [
+    # hydenix inputs - Required modules, don't modify unless you know what you're doing
+    inputs.hydenix.inputs.home-manager.nixosModules.home-manager
+    inputs.hydenix.nixosModules.default
+    ./modules/system # Your custom system modules
+    ./hardware-configuration.nix # Auto-generated hardware config
+
+    # Hardware Configuration - Uncomment lines that match your hardware
+    # Run `lshw -short` or `lspci` to identify your hardware
+
+    # GPU Configuration (choose one):
+    inputs.nixos-hardware.nixosModules.common-gpu-nvidia # NVIDIA
+    # inputs.nixos-hardware.nixosModules.common-gpu-amd # AMD
+
+    # CPU Configuration (choose one):
+    # inputs.nixos-hardware.nixosModules.common-cpu-amd # AMD CPUs
+    inputs.nixos-hardware.nixosModules.common-cpu-intel # Intel CPUs
+
+    # Additional Hardware Modules - Uncomment based on your system type:
+    # inputs.nixos-hardware.nixosModules.common-hidpi # High-DPI displays
+    inputs.nixos-hardware.nixosModules.common-pc-laptop # Laptops
+    # inputs.nixos-hardware.nixosModules.common-pc-ssd # SSD storage
+  ];
+
+  # If enabling NVIDIA, you will be prompted to configure hardware.nvidia
+  hardware.nvidia = {
+    open = true; # For newer cards, you may want open drivers
+    prime = { # For hybrid graphics (laptops), configure PRIME:
+  #     amdBusId = "PCI:0:2:0"; # Run `lspci | grep VGA` to get correct bus IDs
+      intelBusId = "PCI:0:2:0"; # if you have intel graphics
+      nvidiaBusId = "PCI:1:0:0";
+      offload.enable = false; # Or disable PRIME offloading if you don't care
+    };
+  };
+
+  # Home Manager Configuration - manages user-specific configurations (dotfiles, themes, etc.)
+  home-manager = {
+    useGlobalPkgs = true;
+    useUserPackages = true;
+    extraSpecialArgs = { inherit inputs; };
+    # User Configuration - REQUIRED: Change "hydenix" to your actual username
+    # This must match the username you define in users.users below
+    users."bhaswata" =
+      { ... }:
+      {
+        imports = [
+          inputs.hydenix.homeModules.default
+          ./modules/hm # Your custom home-manager modules (configure hydenix.hm here!)
+        ];
+      };
+  };
+
+  # User Account Setup - REQUIRED: Change "hydenix" to your desired username (must match above)
+  users.users.bhaswata = {
+    isNormalUser = true;
+    initialPassword = "131208"; # SECURITY: Change this password after first login with `passwd`
+    extraGroups = [
+      "wheel"
+      "networkmanager"
+      "video"
+    ]; # User groups (determines permissions)
+    shell = pkgs.zsh; # Default shell (options: pkgs.bash, pkgs.zsh, pkgs.fish)
+  };
+
+  # Hydenix Configuration - Main configuration for the Hydenix desktop environment
+  hydenix = {
+    enable = true; # Enable Hydenix modules
+    # Basic System Settings (REQUIRED):
+    hostname = "hydenix"; # REQUIRED: Set your computer's network name (change to something unique)
+    timezone = "Asia/Kolkata"; # REQUIRED: Set timezone (examples: "America/New_York", "Europe/London", "Asia/Tokyo")
+    locale = "en_CA.UTF-8"; # REQUIRED: Set locale/language (examples: "en_US.UTF-8", "en_GB.UTF-8", "de_DE.UTF-8")
+    # For more configuration options, see: ./docs/options.md
+  };
+
+  # System Version - Don't change unless you know what you're doing (helps with system upgrades and compatibility)
+  system.stateVersion = "25.05";
+}
+
+```````
