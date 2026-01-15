@@ -8,14 +8,34 @@
     cmake
     clang
 
-    # Others
+    # Language and formatters
     uv
     cargo
     go
     python3
+    nodejs
+    lua
+    stylua
+    luajit
+
+    # Shell
+    nushell
+
+    # QOL tools
+    zoxide
+    bat
+    delta
+
+    # CLI tools
     ripgrep
     fd
     tree-sitter
-    nodejs
+    lazygit
+    imagemagick
+    ghostscript
+
+    # Document and rendering 
+    mermaid-cli
+    tectonic
   ];
 }
