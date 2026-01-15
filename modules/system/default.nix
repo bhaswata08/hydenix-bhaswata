@@ -1,13 +1,13 @@
-{ ... }:
+{ pkgs, inputs, ... }:
 
 {
   imports = [
-    # ./example.nix - add your modules here
+    ./dev.nix
   ];
 
   environment.systemPackages = with pkgs; [
-	brave,
-	zen-browser,
+	brave
+        inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
 	keepassxc
     # pkgs.vscode - hydenix's vscode version
     # pkgs.userPkgs.vscode - your personal nixpkgs version
