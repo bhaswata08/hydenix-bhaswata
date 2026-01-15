@@ -2,6 +2,10 @@
 
 {
   environment.systemPackages = with pkgs; [
+    # Necessary tools
+    wget
+    unzip
+
     # C++
     gcc
     gnumake
@@ -18,7 +22,6 @@
     stylua
     luajit
     luarocks
-    hererocks
 
     # Shell
     nushell
