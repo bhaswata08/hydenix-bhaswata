@@ -32,6 +32,7 @@
     delta
 
     # CLI tools
+    tree
     ripgrep
     fd
     tree-sitter
