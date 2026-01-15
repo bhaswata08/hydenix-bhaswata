@@ -17,6 +17,8 @@
     lua
     stylua
     luajit
+    luarocks
+    hererocks
 
     # Shell
     nushell
