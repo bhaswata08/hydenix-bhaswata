@@ -1,7 +1,7 @@
 { config, lib, pkgs, ... }:
 
 {
-  hydenix.hm.starship = {
+  programs.starship = {
     enable = true;
     settings = {
       format = ''
