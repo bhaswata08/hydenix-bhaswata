@@ -22,7 +22,7 @@
       python = {
         style = "teal";
         symbol = "󰌠";
-        format = "[''${symbol}''${pyenv_prefix}(''${version} )(\\(''${virtualenv}\\) )](''${style})";
+        format = "[$symbol$pyenv_prefix($version )(($virtualenv) )]($style)";
         pyenv_version_name = true;
         pyenv_prefix = "";
       };
