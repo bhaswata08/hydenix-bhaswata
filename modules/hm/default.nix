@@ -3,7 +3,6 @@
 {
   imports = [
     ./hyprland.nix
-    ./kitty.nix
     ./starship.nix
     # ./example.nix - add your modules here
   ];

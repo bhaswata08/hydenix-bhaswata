@@ -5,19 +5,7 @@
     enable = true;
     settings = {
       format = ''
-        $directory\
-        $git_branch\
-        $git_status\
-        $fill\
-        $lua\
-        $python\
-        $nix_shell\
-        $rust\
-        $docker_context\
-        $jobs\
-        $cmd_duration\
-        $line_break\
-        $character'';
+        $directory$git_branch$git_status$fill$lua$python$nix_shell$rust$docker_context$jobs$cmd_duration$line_break$character'';
 
       python = {
         style = "teal";
@@ -65,7 +53,7 @@
         deleted = "🗑";
         disabled = false;
         diverged = "😵";
-        format = "([[$all_status$ahead_behind]]($style) )";
+        format = "([$all_status$ahead_behind]($style) )";
         ignore_submodules = false;
         modified = "📝";
         renamed = "👅";
