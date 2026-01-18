@@ -2,6 +2,7 @@
 
 {
   environment.systemPackages = with pkgs; [
+    mcontrolcenter
     bottles
     vulkan-tools
     vulkan-loader
@@ -12,9 +13,9 @@
     enable32Bit = true;  # Important for 32-bit Wine games
     extraPackages = with pkgs; [
       intel-media-driver  
-      vaapiIntel
-      vaapiVdpau
+      intel-vaapi-driver
+      libva-vdpau-driver
       libvdpau-va-gl
     ];
-  }
+  };
 }
