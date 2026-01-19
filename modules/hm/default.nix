@@ -4,6 +4,7 @@
   imports = [
     ./hyprland.nix
     ./starship.nix
+    ./git.nix
     # ./example.nix - add your modules here
   ];
 
@@ -15,6 +16,27 @@
   hydenix.hm.editors.default = "nvim";
 
   # hydenix home-manager options go here
-  hydenix.hm.enable = true;
-  # Visit https://github.com/richen604/hydenix/blob/main/docs/options.md for more options
+  home.sessionVariables = {
+    BROWSER = "zen";
+  };
+  xdg.mimeApps = {
+    enable = true;
+    defaultApplications = {
+      "text/html" = "zen.desktop";
+      "x-scheme-handler/http" = "zen.desktop";
+      "x-scheme-handler/https" = "zen.desktop";
+      "x-scheme-handler/about" = "zen.desktop";
+      "x-scheme-handler/unknown" = "zen.desktop";
+    };
+  };
+  hydenix.hm = {
+    enable = true;
+    hyprland.keybindings = {
+      enable = true;
+      extraConfig = ''
+        bind = $mainMod, B, exec, zen
+      '';
+    };
+  };
+    # Visit https://github.com/richen604/hydenix/blob/main/docs/options.md for more options
 }
