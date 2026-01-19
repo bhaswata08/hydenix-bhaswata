@@ -3,6 +3,7 @@
 {
   environment.systemPackages = with pkgs; [
     mcontrolcenter
+    linuxKernel.packages.linux_zen.msi-ec
     bottles
     vulkan-tools
     vulkan-loader
