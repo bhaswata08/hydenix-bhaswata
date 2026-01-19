@@ -30,6 +30,10 @@
     zoxide
     bat
     delta
+    dust
+    nh
+    nix-output-monitor
+    nvd
 
     # CLI tools
     tree
