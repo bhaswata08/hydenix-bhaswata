@@ -25,6 +25,7 @@
 
     # Shell
     nushell
+    carapace
 
     # QOL tools
     zoxide

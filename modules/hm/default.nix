@@ -5,7 +5,7 @@
     ./hyprland.nix
     ./starship.nix
     ./git.nix
-    # ./example.nix - add your modules here
+    ./kitty.nix
   ];
 
   # home-manager options go here
