@@ -2,6 +2,7 @@
   inputs,
   pkgs,
   config,
+  lib,
   ...
 }:
   # FOLLOW THE BELOW INSTRUCTIONS LINE BY LINE TO SET UP YOUR SYSTEM
@@ -121,11 +122,12 @@
     # For more configuration options, see: ./docs/options.md
 
     boot = {
-      enable = true; # enable boot module
       useSystemdBoot = false; # disable for GRUB
-      grubTheme = "Retroboot"; # or "Pochita"
-      grubExtraConfig = ""; # additional GRUB configuration
     };
+  };
+
+  boot.loader.grub = {
+    theme = lib.mkForce inputs.nixos-grub-themes.packages.${pkgs.system}.hyperfluent;
   };
 
   # System Version - Don't change unless you know what you're doing (helps with system upgrades and compatibility)
