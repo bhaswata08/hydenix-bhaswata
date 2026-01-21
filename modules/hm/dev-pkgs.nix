@@ -6,9 +6,7 @@
     uv
     cargo
     go
-    python3
     nodejs
-    lua
     stylua
     luajit
     luarocks

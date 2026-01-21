@@ -2,7 +2,7 @@
 {
   programs.git = {
     enable = true;
-    extraConfig = {
+    settings = {
       core.pager = "delta";
       interactive.diffFilter = "delta --color-only";
       delta.enable = true;
