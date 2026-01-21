@@ -6,6 +6,10 @@
       # url = "github:nixos/nixpkgs/nixos-unstable"; # uncomment this if you know what you're doing
       follows = "hydenix/nixpkgs"; # then comment this
     };
+    home-manager = {
+      url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     hydenix.url = "github:richen604/hydenix";
     nixos-hardware.url = "github:nixos/nixos-hardware/master";
     zen-browser = {
@@ -16,10 +20,11 @@
   };
 
   outputs =
-    { ... }@inputs:
+    { self, nixpkgs, home-manager, ... }@inputs:
     let
+      system = "x86_64-linux";
       hydenixConfig = inputs.nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
+        inherit system;
         specialArgs = {
           inherit inputs;
         };
@@ -35,6 +40,22 @@
     {
       nixosConfigurations.hydenix = hydenixConfig;
       nixosConfigurations.default = hydenixConfig;
+      homeConfigurations."bhaswata@hydenix" = home-manager.lib.homeManagerConfiguration {
+        # pkgs = nixpkgs.legacyPackages.${system};
+        pkgs = hydenixConfig.pkgs;
+        extraSpecialArgs = { inherit inputs; };
+        modules = [
+          inputs.hydenix.homeModules.default
+          ./modules/hm
+          {
+            home = {
+              username = "bhaswata";
+              homeDirectory = "/home/bhaswata";
+              stateVersion = "25.05";
+            };
+          }
+        ];
+      };
       packages."x86_64-linux".vm = vmConfig.config.system.build.vm;
     };
 }

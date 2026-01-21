@@ -1,4 +1,4 @@
-{ ... }:
+{ pkgs, ... }:
 
 {
   imports = [
@@ -12,6 +12,7 @@
   home.packages = [
     # pkgs.vscode - hydenix's vscode version
     # pkgs.userPkgs.vscode - your personal nixpkgs version
+    pkgs.rembg
   ];
   hydenix.hm.editors.default = "nvim";
 
