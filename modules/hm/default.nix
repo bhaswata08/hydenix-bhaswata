@@ -6,6 +6,8 @@
     ./starship.nix
     ./git.nix
     ./kitty.nix
+    ./dev-pkgs.nix
+    ./gaming-pkgs.nix
   ];
 
   # home-manager options go here

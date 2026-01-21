@@ -1,9 +1,12 @@
 { pkgs, inputs, ... }:
 
 {
-  environment.systemPackages= with pkgs; [
-    mcontrolcenter
-    linuxKernel.packages.linux_zen.msi-ec
+  home.packages = with pkgs; [
+    bottles      
+    vulkan-tools  
+    vulkan-loader
+    vulkan-validation-layers
+    mangohud       
   ];
   hardware.graphics = {
     enable = true;

@@ -12,41 +12,7 @@
     cmake
     clang
 
-    # Language and formatters
-    uv
-    cargo
-    go
-    python3
-    nodejs
-    lua
-    stylua
-    luajit
-    luarocks
-
     # Shell
     nushell
-    carapace
-
-    # QOL tools
-    zoxide
-    bat
-    delta
-    dust
-    nh
-    nix-output-monitor
-    nvd
-
-    # CLI tools
-    tree
-    ripgrep
-    fd
-    tree-sitter
-    lazygit
-    imagemagick
-    ghostscript
-
-    # Document and rendering 
-    mermaid-cli
-    tectonic
   ];
 }
