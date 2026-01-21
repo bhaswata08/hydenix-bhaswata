@@ -8,6 +8,7 @@
     ./kitty.nix
     ./dev-pkgs.nix
     ./gaming-pkgs.nix
+    ./other-pkgs.nix
   ];
 
   # home-manager options go here
