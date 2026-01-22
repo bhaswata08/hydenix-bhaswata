@@ -18,6 +18,7 @@
     pkgs.rembg
   ];
   hydenix.hm.editors.default = "nvim";
+  hydenix.hm.theme.active = "Green Lush";
 
   # hydenix home-manager options go here
   home.sessionVariables = {

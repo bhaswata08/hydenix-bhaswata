@@ -12,7 +12,6 @@
     keepassxc
     rpi-imager
     libxcb
-    onlyoffice-desktopeditors
     # pkgs.vscode - hydenix's vscode version
     # pkgs.userPkgs.vscode - your personal nixpkgs version
   ];
