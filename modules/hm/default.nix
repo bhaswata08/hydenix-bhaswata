@@ -9,6 +9,7 @@
     ./dev-pkgs.nix
     ./gaming-pkgs.nix
     ./other-pkgs.nix
+    ./xdg-defaults.nix
   ];
 
   # home-manager options go here
@@ -18,21 +19,12 @@
     pkgs.rembg
   ];
   hydenix.hm.editors.default = "nvim";
+  hydenix.hm.editors.vscode.enable = false;
   hydenix.hm.theme.active = "Green Lush";
 
   # hydenix home-manager options go here
   home.sessionVariables = {
     BROWSER = "zen";
-  };
-  xdg.mimeApps = {
-    enable = true;
-    defaultApplications = {
-      "text/html" = "zen.desktop";
-      "x-scheme-handler/http" = "zen.desktop";
-      "x-scheme-handler/https" = "zen.desktop";
-      "x-scheme-handler/about" = "zen.desktop";
-      "x-scheme-handler/unknown" = "zen.desktop";
-    };
   };
   hydenix.hm = {
     enable = true;

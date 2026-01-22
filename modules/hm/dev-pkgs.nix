@@ -31,9 +31,11 @@
     lazygit
     imagemagick
     ghostscript
+    dragon-drop
 
     # Document and rendering 
     mermaid-cli
     tectonic
+    pandoc
   ];
 }
