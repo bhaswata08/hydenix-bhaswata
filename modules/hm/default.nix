@@ -2,13 +2,14 @@
 
 {
   imports = [
-    ./hyprland.nix
-    ./starship.nix
-    ./git.nix
-    ./kitty.nix
     ./dev-pkgs.nix
+    ./disable-shit-apps.nix
     ./gaming-pkgs.nix
+    ./git.nix
+    ./hyprland.nix
+    ./kitty.nix
     ./other-pkgs.nix
+    ./starship.nix
     ./xdg-defaults.nix
   ];
 
@@ -19,7 +20,6 @@
     pkgs.rembg
   ];
   hydenix.hm.editors.default = "nvim";
-  hydenix.hm.editors.vscode.enable = false;
   hydenix.hm.theme.active = "Green Lush";
 
   # hydenix home-manager options go here
