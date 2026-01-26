@@ -52,7 +52,7 @@
   services.fstrim = {
     enable = true;
     interval = "weekly";
-  }
+  };
   boot.kernel.sysctl = {
     "vm.swappiness" = 10;
     "vm.vfs_cache_pressure" = 50;
