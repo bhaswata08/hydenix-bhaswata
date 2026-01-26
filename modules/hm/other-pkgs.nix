@@ -6,5 +6,7 @@
     onlyoffice-desktopeditors
     kdePackages.kolourpaint
     typst
+    qbittorrent-enhanced
+    smartmontools
   ];
 }

@@ -2,8 +2,6 @@
 
 {
   environment.systemPackages= with pkgs; [
-    mcontrolcenter
-    linuxKernel.packages.linux_zen.msi-ec
   ];
   hardware.graphics = {
     enable = true;

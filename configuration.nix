@@ -48,12 +48,20 @@
 
 
   services.xserver.videoDrivers = [ "nvidia" ];
+
+  services.fstrim = {
+    enable = true;
+    interval = "weekly";
+  }
+  boot.kernel.sysctl = {
+    "vm.swappiness" = 10;
+    "vm.vfs_cache_pressure" = 50;
+  };
   
   hardware.nvidia = {
     modesetting.enable = true;
-    powerManagement.enable = false;
-    powerManagement.finegrained = false;
-    open = false;
+    powerManagement.enable = true;
+    open = true;
     nvidiaSettings = true;
     package = config.boot.kernelPackages.nvidiaPackages.stable;
     
