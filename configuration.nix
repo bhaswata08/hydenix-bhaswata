@@ -34,6 +34,11 @@
   boot.initrd.luks.devices = {
     "luks-7282faec-2147-4fdf-b6d8-6529460f9fe1".device = "/dev/disk/by-uuid/7282faec-2147-4fdf-b6d8-6529460f9fe1";
   };
+  fileSystems."/home/bhaswata/ssd/fastboi" = {
+    device = "711c37b5-3285-4c01-8fcb-3f170ad206fe";
+    fsType = "ext4";
+    options = ["defaults" "nofail" ];
+  };
 
   nix = {
     settings = {
@@ -56,6 +61,11 @@
   boot.kernel.sysctl = {
     "vm.swappiness" = 10;
     "vm.vfs_cache_pressure" = 50;
+  };
+  boot.kernelModules = [ "msi-laptop" ];
+
+  boot.kernel.sysctl = {
+    "vm.laptop_mode" = 0;
   };
   
   hardware.nvidia = {

@@ -10,6 +10,7 @@
     stylua
     luajit
     luarocks
+    docker
 
     # Shell
     carapace
@@ -22,6 +23,9 @@
     nh
     nix-output-monitor
     nvd
+    viu
+    chafa
+    ueberzugpp
 
     # CLI tools
     tree
