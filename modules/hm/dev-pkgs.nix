@@ -4,13 +4,14 @@
   home.packages = with pkgs; [
     # Language and formatters
     uv
-    cargo
     go
     nodejs
     stylua
     luajit
     luarocks
     docker
+    rustup
+    inputs.rustowl.packages.${pkgs.system}.default
 
     # Shell
     carapace

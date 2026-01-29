@@ -16,6 +16,7 @@
       url = "github:youwen5/zen-browser-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    rustowl.url = "github:nix-community/rustowl-flake";
     nixos-grub-themes.url = "github:jeslie0/nixos-grub-themes";
   };
 
