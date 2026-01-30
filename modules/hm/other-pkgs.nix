@@ -10,5 +10,6 @@
     qbittorrent-enhanced
     smartmontools
     openfortivpn
+    libreoffice
   ];
 }
