@@ -37,7 +37,7 @@
   fileSystems."/home/bhaswata/ssd/fastboi" = {
     device = "/dev/disk/by-uuid/711c37b5-3285-4c01-8fcb-3f170ad206fe";
     fsType = "ext4";
-    options = ["defaults" "nofail" ];
+    options = ["defaults" ];
   };
 
   nix = {
