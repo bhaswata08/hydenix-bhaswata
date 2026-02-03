@@ -30,7 +30,8 @@
     inputs.nixos-hardware.nixosModules.common-pc-laptop # Laptops
     # inputs.nixos-hardware.nixosModules.common-pc-ssd # SSD storage
   ];
-
+  virtualisation.docker.enable = true;
+  virtualisation.docker.autoPrune.enable = true;
   boot.initrd.luks.devices = {
     "luks-7282faec-2147-4fdf-b6d8-6529460f9fe1".device = "/dev/disk/by-uuid/7282faec-2147-4fdf-b6d8-6529460f9fe1";
   };
@@ -126,6 +127,7 @@
       "wheel"
       "networkmanager"
       "video"
+      "docker"
     ]; # User groups (determines permissions)
     shell = pkgs.nushell; # Default shell (options: pkgs.bash, pkgs.zsh, pkgs.fish)
   };

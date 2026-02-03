@@ -397,6 +397,22 @@
     },
     "nixpkgs_5": {
       "locked": {
+        "lastModified": 1770019141,
+        "narHash": "sha256-VKS4ZLNx4PNrABoB0L8KUpc1fE7CLpQXQs985tGfaCU=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "cb369ef2efd432b3cdf8622b0ffc0a97a02f3137",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_6": {
+      "locked": {
         "lastModified": 1770015011,
         "narHash": "sha256-7vUo0qWCl/rip+fzr6lcMlz9I0tN/8m7d5Bla/rS2kk=",
         "owner": "NixOS",
@@ -411,7 +427,7 @@
         "type": "github"
       }
     },
-    "nixpkgs_6": {
+    "nixpkgs_7": {
       "locked": {
         "lastModified": 1744536153,
         "narHash": "sha256-awS2zRgF4uTwrOKwwiJcByDzDOdo3Q1rPZbiHQg/N38=",
@@ -427,6 +443,24 @@
         "type": "github"
       }
     },
+    "pfm": {
+      "inputs": {
+        "nixpkgs": "nixpkgs_5"
+      },
+      "locked": {
+        "lastModified": 1770116884,
+        "narHash": "sha256-ZURxBOQnIt1tdXlY6giHbFeIqGUZMsERNHLrhC4W2w0=",
+        "owner": "bhaswata08",
+        "repo": "pfm",
+        "rev": "66d1d0a1f2c2eeb578cc004f8a8b16928d863939",
+        "type": "github"
+      },
+      "original": {
+        "owner": "bhaswata08",
+        "repo": "pfm",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "home-manager": "home-manager",
@@ -437,6 +471,7 @@
           "hydenix",
           "nixpkgs"
         ],
+        "pfm": "pfm",
         "rustowl": "rustowl",
         "zen-browser": "zen-browser"
       }
@@ -461,7 +496,7 @@
     },
     "rust-overlay_2": {
       "inputs": {
-        "nixpkgs": "nixpkgs_6"
+        "nixpkgs": "nixpkgs_7"
       },
       "locked": {
         "lastModified": 1770001842,
@@ -481,7 +516,7 @@
       "inputs": {
         "flake-parts": "flake-parts",
         "git-hooks": "git-hooks",
-        "nixpkgs": "nixpkgs_5",
+        "nixpkgs": "nixpkgs_6",
         "rust-overlay": "rust-overlay_2",
         "rustowl": "rustowl_2"
       },

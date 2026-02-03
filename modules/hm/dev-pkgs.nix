@@ -38,6 +38,7 @@
     ghostscript
     dragon-drop
     just
+    inputs.pfm.packages.${pkgs.system}.default
 
     # Document and rendering 
     mermaid-cli
