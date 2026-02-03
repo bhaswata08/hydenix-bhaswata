@@ -37,6 +37,7 @@
     imagemagick
     ghostscript
     dragon-drop
+    just
 
     # Document and rendering 
     mermaid-cli

@@ -12,5 +12,6 @@
     openfortivpn
     libreoffice
     mpv
+    antigravity
   ];
 }

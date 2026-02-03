@@ -13,6 +13,7 @@
     clang
 
     # Shell
+    btop
     nushell
   ];
 }
