@@ -44,5 +44,8 @@
     mermaid-cli
     tectonic
     pandoc
+
+# CUDA
+    cudaPackages.cudatoolkit
   ];
 }

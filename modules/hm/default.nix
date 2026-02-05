@@ -33,10 +33,6 @@
       extraConfig = ''
       $BROWSER = zen
       '';
-      # extraConfig = ''
-      #   
-      #   bind = $mainMod, B, exec, zen
-      # '';
     };
   };
     # Visit https://github.com/richen604/hydenix/blob/main/docs/options.md for more options

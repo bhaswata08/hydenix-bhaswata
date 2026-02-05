@@ -15,5 +15,8 @@
     # Shell
     btop
     nushell
+
+    dmidecode
+    lshw
   ];
 }
