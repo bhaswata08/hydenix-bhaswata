@@ -150,6 +150,10 @@
     theme = lib.mkForce inputs.nixos-grub-themes.packages.${pkgs.system}.hyperfluent;
   };
 
+  programs.direnv = {
+    enable = true;
+    nix-direnv.enable = true;
+    };
   # System Version - Don't change unless you know what you're doing (helps with system upgrades and compatibility)
   system.stateVersion = "25.05";
 }

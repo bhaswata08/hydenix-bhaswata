@@ -1,4 +1,4 @@
-{ pkgs, inputs, ... }:
+{ pkgs, inputs, lib, ... }:
 
 {
   home.packages = with pkgs; [
@@ -45,7 +45,6 @@
     tectonic
     pandoc
 
-# CUDA
-    cudaPackages.cudatoolkit
+    direnv
   ];
 }

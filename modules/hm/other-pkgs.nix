@@ -13,5 +13,8 @@
     libreoffice
     mpv
     antigravity
+    protonvpn-gui
+    ffmpeg
+    avahi
   ];
 }
