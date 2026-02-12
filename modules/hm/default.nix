@@ -11,6 +11,7 @@
     ./other-pkgs.nix
     ./starship.nix
     ./xdg-defaults.nix
+    ./anyrun.nix
   ];
 
   # home-manager options go here
@@ -32,6 +33,7 @@
       enable = true;
       extraConfig = ''
       $BROWSER = zen
+      bind = SUPER, SPACE, exec, anyrun
       '';
     };
   };

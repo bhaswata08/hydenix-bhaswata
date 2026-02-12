@@ -32,10 +32,6 @@
         };
         modules = [
           ./configuration.nix
-          {
-
-          nixpkgs.config.allowUnfree = true;
-          }
         ];
       };
       vmConfig = inputs.hydenix.lib.vmConfig {
