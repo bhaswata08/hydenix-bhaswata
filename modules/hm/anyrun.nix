@@ -1,3 +1,4 @@
+{ pkgs, ... }:
 {
   programs.anyrun = {
     enable = true;
@@ -8,6 +9,7 @@
         "${pkgs.anyrun}/lib/librink.so"
         "${pkgs.anyrun}/lib/librandr.so"
         "${pkgs.anyrun}/lib/libwebsearch.so"
+        "${pkgs.anyrun}/lib/libkidex.so"
       ];
     };
   };

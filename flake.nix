@@ -19,6 +19,7 @@
     rustowl.url = "github:nix-community/rustowl-flake";
     nixos-grub-themes.url = "github:jeslie0/nixos-grub-themes";
     pfm.url = "github:bhaswata08/pfm";
+    kidex.url = "github:Kirottu/kidex";
   };
 
   outputs =

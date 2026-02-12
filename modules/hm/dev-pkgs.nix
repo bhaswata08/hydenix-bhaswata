@@ -47,5 +47,6 @@
 
     direnv
     anyrun
+    inputs.kidex.packages.${pkgs.system}.default
   ];
 }
