@@ -48,5 +48,8 @@
     direnv
     anyrun
     inputs.kidex.packages.${pkgs.system}.kidex
+    chromium
+    pkgs.brlaser
+    cups
   ];
 }

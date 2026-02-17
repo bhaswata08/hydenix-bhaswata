@@ -16,5 +16,9 @@
     protonvpn-gui
     ffmpeg
     avahi
+    stash
+    kdePackages.kdenlive
+    handbrake
   ];
+
 }

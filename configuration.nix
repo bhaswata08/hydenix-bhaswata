@@ -52,7 +52,28 @@
     };
   };
 
-
+  services.printing.enable = true;
+  services.avahi = {
+    enable = true;
+    nssmdns4 = true;
+    openFirewall = true;
+    publish = {
+      enable = true;
+      addresses = true;
+      workstation = true;
+    };
+  };
+  networking.firewall = {
+    enable = true;
+    allowedTCPPorts = [ 
+      # Add your server ports here, for example:
+      # 3000  # Node.js/React dev server
+      # 8080  # Common web server port
+      # 5000  # Flask/Python dev server
+      9999
+    ];
+    allowedUDPPorts = [ 5353 ];
+  };
   services.xserver.videoDrivers = [ "nvidia" ];
 
   services.fstrim = {
