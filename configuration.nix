@@ -168,7 +168,7 @@
   };
 
   boot.loader.grub = {
-    theme = lib.mkForce inputs.nixos-grub-themes.packages.${pkgs.system}.hyperfluent;
+    theme = lib.mkForce inputs.nixos-grub-themes.packages.${pkgs.stdenv.hostPlatform.system}.hyperfluent;
   };
 
   programs.direnv = {

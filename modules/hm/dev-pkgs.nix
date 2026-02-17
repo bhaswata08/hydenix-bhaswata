@@ -11,7 +11,7 @@
     luarocks
     docker
     rustup
-    inputs.rustowl.packages.${pkgs.system}.default
+    inputs.rustowl.packages.${pkgs.stdenv.hostPlatform.system}.default
 
     # Shell
     carapace
@@ -38,7 +38,7 @@
     ghostscript
     dragon-drop
     just
-    inputs.pfm.packages.${pkgs.system}.default
+    inputs.pfm.packages.${pkgs.stdenv.hostPlatform.system}.default
 
     # Document and rendering 
     mermaid-cli
@@ -47,7 +47,7 @@
 
     direnv
     anyrun
-    inputs.kidex.packages.${pkgs.system}.kidex
+    inputs.kidex.packages.${pkgs.stdenv.hostPlatform.system}.kidex
     chromium
     pkgs.brlaser
     cups

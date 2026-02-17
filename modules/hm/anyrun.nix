@@ -58,7 +58,7 @@
       Partof = [ "graphical-session.target" ];
     };
     Service = {
-      ExecStart = "${inputs.kidex.packages.${pkgs.system}.kidex}/bin/kidex";
+      ExecStart = "${inputs.kidex.packages.${pkgs.stdenv.hostPlatform.system}.kidex}/bin/kidex";
       Restart = "always";
     };
     Install = {
