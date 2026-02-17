@@ -33,9 +33,11 @@
       enable = true;
       extraConfig = ''
       $BROWSER = zen
-      bind = SUPER, SPACE, exec, anyrun
+      bind = SUPER, SPACE, exec, sh -c 'anyrun --show-results-immediately true | wl-copy'
       '';
     };
   };
+
+      # bind = SUPER, SPACE, exec, anyrun --show-results-immediately true | wl-copy
     # Visit https://github.com/richen604/hydenix/blob/main/docs/options.md for more options
 }
