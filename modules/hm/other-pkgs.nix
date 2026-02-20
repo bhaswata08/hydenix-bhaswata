@@ -19,6 +19,8 @@
     stash
     kdePackages.kdenlive
     handbrake
+    rustdesk
+
   ];
 
 }
