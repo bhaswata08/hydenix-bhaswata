@@ -3,3 +3,4 @@
 result
 .git-hooks
 codebase.txt
+flake.lock
