@@ -12,6 +12,7 @@
     ./starship.nix
     ./xdg-defaults.nix
     ./anyrun.nix
+    ./waybar.nix
   ];
 
   # home-manager options go here
