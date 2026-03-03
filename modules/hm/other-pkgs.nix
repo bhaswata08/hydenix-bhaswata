@@ -10,7 +10,6 @@
     qbittorrent-enhanced
     smartmontools
     openfortivpn
-    libreoffice
     mpv
     antigravity
     protonvpn-gui
@@ -20,7 +19,10 @@
     kdePackages.kdenlive
     handbrake
     rustdesk
-
+    obsidian
+    kubectl
+    kubernetes
+    opencode
   ];
 
 }
