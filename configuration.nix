@@ -83,16 +83,15 @@
   boot.kernel.sysctl = {
     "vm.swappiness" = 10;
     "vm.vfs_cache_pressure" = 50;
+    "vm.laptop_mode" = 0;
   };
   boot.kernelModules = [ "msi-laptop" ];
 
-  boot.kernel.sysctl = {
-    "vm.laptop_mode" = 0;
-  };
   
   hardware.nvidia = {
     modesetting.enable = true;
     powerManagement.enable = true;
+    powerManagement.finegrained = true;
     open = true;
     nvidiaSettings = true;
     package = config.boot.kernelPackages.nvidiaPackages.stable;
@@ -150,7 +149,7 @@
       "video"
       "docker"
     ]; # User groups (determines permissions)
-    shell = pkgs.nushell; # Default shell (options: pkgs.bash, pkgs.zsh, pkgs.fish)
+    shell = pkgs.zsh; # Default shell (options: pkgs.bash, pkgs.zsh, pkgs.fish)
   };
 
   # Hydenix Configuration - Main configuration for the Hydenix desktop environment
@@ -175,6 +174,22 @@
     enable = true;
     nix-direnv.enable = true;
     };
-  # System Version - Don't change unless you know what you're doing (helps with system upgrades and compatibility)
+  programs.nix-ld.enable = true;
+  programs.nix-ld.libraries = with pkgs; [
+    xorg.libxcb
+      libGL
+      glib
+  ];
+  systemd.services.nvidia-powerd = {
+    description = "NVIDIA Power Daemon";
+    wantedBy = [ "multi-user.target" ];
+    after = [ "systemd-udev-settle.service" ];
+    serviceConfig = {
+      Type = "simple";
+      ExecStart = "/run/current-system/sw/bin/nvidia-powerd";
+      Restart = "on-failure";
+    };
+  };
+# System Version - Don't change unless you know what you're doing (helps with system upgrades and compatibility)
   system.stateVersion = "25.05";
 }

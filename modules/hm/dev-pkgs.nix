@@ -51,5 +51,8 @@
     chromium
     pkgs.brlaser
     cups
+    libglvnd
+    stdenv.cc.cc.lib
+    nushell
   ];
 }

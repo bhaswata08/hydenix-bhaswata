@@ -23,6 +23,7 @@
     kubectl
     kubernetes
     opencode
+    arduino-ide
   ];
 
 }

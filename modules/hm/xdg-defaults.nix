@@ -11,6 +11,7 @@
       "x-scheme-handler/unknown" = "zen.desktop";
       "application/pdf" = "zen.desktop";
       "image/png" = "satty";
+      "video/quicktime" = "mpv";
     };
   };
 }
