@@ -12,7 +12,7 @@
     openfortivpn
     mpv
     antigravity
-    protonvpn-gui
+    proton-vpn
     ffmpeg
     avahi
     stash

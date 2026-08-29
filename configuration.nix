@@ -176,9 +176,9 @@
     };
   programs.nix-ld.enable = true;
   programs.nix-ld.libraries = with pkgs; [
-    xorg.libxcb
-      libGL
-      glib
+    libxcb
+    libGL
+    glib
   ];
   systemd.services.nvidia-powerd = {
     description = "NVIDIA Power Daemon";
@@ -190,6 +190,13 @@
       Restart = "on-failure";
     };
   };
+  nixpkgs.overlays = [
+    (final: prev: {
+      openldap = prev.openldap.overrideAttrs (oldAttrs: {
+        doCheck = false;
+      });
+    })
+  ];
 # System Version - Don't change unless you know what you're doing (helps with system upgrades and compatibility)
   system.stateVersion = "25.05";
 }

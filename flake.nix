@@ -3,8 +3,9 @@
 
   inputs = {
     nixpkgs = {
-      # url = "github:nixos/nixpkgs/nixos-unstable"; # uncomment this if you know what you're doing
-      follows = "hydenix/nixpkgs"; # then comment this
+      url = "github:nixos/nixpkgs/nixos-unstable"; # uncomment this if you know what you're doing
+      # url = "github:NixOS/nixpkgs/95e96e8632c387dcf8c4223b8ab14a58936f8b10";
+      # follows = "hydenix/nixpkgs"; # then comment this
     };
     home-manager = {
       url = "github:nix-community/home-manager";
@@ -44,8 +45,8 @@
       nixosConfigurations.hydenix = hydenixConfig;
       nixosConfigurations.default = hydenixConfig;
       homeConfigurations."bhaswata@hydenix" = home-manager.lib.homeManagerConfiguration {
-        # pkgs = nixpkgs.legacyPackages.${system};
-        pkgs = hydenixConfig.pkgs;
+        pkgs = nixpkgs.legacyPackages.${system};
+        # pkgs = hydenixConfig.pkgs;
         extraSpecialArgs = { inherit inputs; };
         modules = [
           inputs.hydenix.homeModules.default
